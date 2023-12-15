@@ -13,6 +13,7 @@ import '../screens/depression_screen.dart';
 import '../screens/depression_screen_2.dart';
 import '../screens/depression_screen_3.dart';
 import '../screens/depression_screen_sense.dart';
+import '../screens/event_create_screen.dart';
 import '../screens/iphone-14-5.dart';
 import '../screens/med10.dart';
 import '../screens/med11.dart';
@@ -102,6 +103,7 @@ class _VideoSectionState extends State<VideoSection> {
       'Advanced Meditation Part 2',
       'Advanced Meditation Part 3',
       'Advanced Meditation Part 4',
+      'trial',
       // Add more videos for Meditation
     ],
     'OCD': [
@@ -163,6 +165,18 @@ class _VideoSectionState extends State<VideoSection> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => MeditationScreen(),
+                  ),
+                );
+                break;
+              case 'trial':
+                await dataAdded(
+                  'trial',
+                  'Meditation',
+                );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => event(),
                   ),
                 );
                 break;
