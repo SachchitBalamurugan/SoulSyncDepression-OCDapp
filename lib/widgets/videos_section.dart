@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../screens/EventManager.dart';
 import '../screens/brain_teaser.dart';
 import '../screens/car_game.dart';
 import '../screens/clean_ocd_help.dart';
@@ -14,6 +15,7 @@ import '../screens/depression_screen_2.dart';
 import '../screens/depression_screen_3.dart';
 import '../screens/depression_screen_sense.dart';
 import '../screens/event_create_screen.dart';
+import '../screens/iphone-14-12.dart';
 import '../screens/iphone-14-5.dart';
 import '../screens/med10.dart';
 import '../screens/med11.dart';
@@ -62,6 +64,7 @@ class _VideoSectionState extends State<VideoSection> {
       'Focus Game',
       'Brain Game',
       'Color Game',
+      'Event Manager test',
     ],
     'Depression': [
       'Are you Depressed: Quiz',
@@ -609,6 +612,18 @@ class _VideoSectionState extends State<VideoSection> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => FocusGameApp(),
+                  ),
+                );
+                break;
+              case "Event Manager test":
+                await dataAdded(
+                  'Event Manager test',
+                  'Concentration',
+                );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EventManager(),
                   ),
                 );
                 break;
