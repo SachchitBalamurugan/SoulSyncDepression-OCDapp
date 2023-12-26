@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../screens/EventCreator.dart';
 import '../screens/EventManager.dart';
 import '../screens/brain_teaser.dart';
 import '../screens/car_game.dart';
@@ -65,6 +66,7 @@ class _VideoSectionState extends State<VideoSection> {
       'Brain Game',
       'Color Game',
       'Event Manager test',
+      'Event Info Test'
     ],
     'Depression': [
       'Are you Depressed: Quiz',
@@ -624,6 +626,18 @@ class _VideoSectionState extends State<VideoSection> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => EventManager(),
+                  ),
+                );
+                break;
+              case "Event Info Test":
+                await dataAdded(
+                  'Event Info Test',
+                  'Concentration',
+                );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EventCreator(),
                   ),
                 );
                 break;

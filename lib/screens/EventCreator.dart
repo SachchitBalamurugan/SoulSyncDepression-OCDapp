@@ -1,10 +1,26 @@
+import 'dart:io';  // Add this import for File class
 import 'package:flutter/material.dart';
-
+import 'package:image_picker/image_picker.dart';
 import 'home_screen.dart';
 
-class EventManagerInfo extends StatelessWidget {
+
+class EventCreator extends StatelessWidget {
   final double fem = 1.0;
   final double ffem = 1.0;
+  File? _image; // Variable to store the selected image file
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      // Update the state to rebuild the widget with the selected image
+      // You might want to use StatefulWidget and manage the state accordingly
+      // For simplicity, I'll just print the path of the selected image here
+      print("Selected image: ${pickedFile.path}");
+    } else {
+      print("No image selected");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,17 +55,16 @@ class EventManagerInfo extends StatelessWidget {
               child: SizedBox(
                 width: 410,
                 height: 415,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(26),
-                  child: ColorFiltered(
-                    colorFilter: ColorFilter.mode(
-                      Colors.black.withOpacity(0.4), // Set opacity here
-                      BlendMode.srcOver,
-                    ),
-                    child: Image.network(
-                      "https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn",
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(26),
+                    color: Colors.grey, // Set the default background color here
+                    image: _image != null
+                        ? DecorationImage(
+                      image: FileImage(_image!), // Set the selected image as the background
                       fit: BoxFit.cover,
-                    ),
+                    )
+                        : null,
                   ),
                 ),
               ),
@@ -64,7 +79,7 @@ class EventManagerInfo extends StatelessWidget {
                 width: 364,
                 height: 95,
                 child: Text(
-                  'Fundraiser in Ohio Dr',
+                  'Type your title here...',
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 39,
@@ -84,7 +99,7 @@ class EventManagerInfo extends StatelessWidget {
                 width: 150 * fem, // Increase the width to accommodate the text
                 height: 140 * fem,
                 child: Text(
-                  'Jan 12, 2024',
+                  'Select data here...',
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 17,
@@ -105,7 +120,7 @@ class EventManagerInfo extends StatelessWidget {
                 width: 183 * fem,
                 height: 140 * fem,
                 child: Text(
-                  'Greenfields, Sector 101, Forbibad',
+                  'Choose location...',
                   style: TextStyle(
                     fontFamily: 'Inter', // You can specify the font family here
                     fontSize: 17 * ffem,
@@ -123,10 +138,10 @@ class EventManagerInfo extends StatelessWidget {
             top: 375 * fem,
             child: Align(
               child: SizedBox(
-                width: 150 * fem,
+                width: 350 * fem,
                 height: 140 * fem,
                 child: Text(
-                  '10 Attending',
+                  'Attending (Auto Updates)',
                   style: TextStyle(
                     fontFamily: 'Inter', // You can specify the font family here
                     fontSize: 17 * ffem,
@@ -166,7 +181,7 @@ class EventManagerInfo extends StatelessWidget {
                 width: 364,
                 height: 200,
                 child: Text(
-                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                  'Type your text here...',
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 18,
@@ -206,7 +221,7 @@ class EventManagerInfo extends StatelessWidget {
                 width: 364,
                 height: 200,
                 child: Text(
-                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                  'Type your text here...',
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 18,
@@ -308,6 +323,21 @@ class EventManagerInfo extends StatelessWidget {
               },
             ),
           ),
+          Positioned(
+            left: 148 * fem,
+            top: 150 * fem,
+            child: IconButton(
+              icon: Icon(
+                Icons.upload,
+                size: 102 * fem,
+              ),
+              color: Colors.white,
+              onPressed: () {
+                _pickImage(); // Open the image picker when the upload icon is tapped
+              },
+            ),
+          ),
+
         ],
       ),
     );
@@ -315,5 +345,5 @@ class EventManagerInfo extends StatelessWidget {
 }
 
 void main() {
-  runApp(EventManagerInfo());
+  runApp(EventCreator());
 }

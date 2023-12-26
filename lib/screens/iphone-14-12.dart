@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'EventManager.dart';
 import 'home_screen.dart';
 
 IconData donateIcon = Icons.monetization_on; // Replace with the appropriate donation icon
@@ -167,7 +168,7 @@ class EventManager extends StatelessWidget {
                 // Navigate to another screen or add your button click logic here
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HomePage()),
+                  MaterialPageRoute(builder: (context) => EventManagerInfo()),
                 );
               },
               style: ElevatedButton.styleFrom(
