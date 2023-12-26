@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'EventCreator.dart';
 import 'EventManager.dart';
 import 'home_screen.dart';
 
@@ -168,7 +169,7 @@ class EventManager extends StatelessWidget {
                 // Navigate to another screen or add your button click logic here
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => EventManagerInfo()),
+                  MaterialPageRoute(builder: (context) => EventCreator()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -408,7 +409,23 @@ class EventManager extends StatelessWidget {
           Positioned(
             left: 20 * fem,
             top: 602 * fem,
-            child: Container(
+            child: ElevatedButton(
+              onPressed: () {
+                // Navigate to another screen or add your button click logic here
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EventManagerInfo()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(23 * fem),
+                ),
+                elevation: 2 * fem,
+                primary: Color(0xff335660),
+              ),
+              child: Container(
               padding: EdgeInsets.fromLTRB(22.97 * fem, 0 * fem, 0 * fem, 0 * fem),
               width: 355 * fem,
               height: 107 * fem,
@@ -513,7 +530,7 @@ class EventManager extends StatelessWidget {
             ),
           ),
           //Add more Event boxes below
-
+          ),
         ],
       ),
     );

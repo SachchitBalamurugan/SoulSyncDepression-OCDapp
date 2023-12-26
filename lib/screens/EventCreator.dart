@@ -2,6 +2,7 @@ import 'dart:io';  // Add this import for File class
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'home_screen.dart';
+import 'location_manager.dart';
 
 
 class EventCreator extends StatefulWidget {
@@ -142,7 +143,7 @@ class _EventCreatorState extends State<EventCreator> {
             top: 290.5 * fem,
             child: Align(
               child: SizedBox(
-                width: 183 * fem,
+                width: 383 * fem,
                 height: 140 * fem,
                 child: Text(
                   selectedDate != null
@@ -325,7 +326,7 @@ class _EventCreatorState extends State<EventCreator> {
                   // Navigate to another screen or add your button click logic here
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
+                    MaterialPageRoute(builder: (context) => LocationSelectionScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(

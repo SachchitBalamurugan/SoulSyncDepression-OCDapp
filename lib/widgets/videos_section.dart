@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../screens/BookingManager.dart';
 import '../screens/EventCreator.dart';
 import '../screens/EventManager.dart';
 import '../screens/brain_teaser.dart';
@@ -637,7 +638,7 @@ class _VideoSectionState extends State<VideoSection> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EventCreator(),
+                    builder: (context) => BookingManager(),
                   ),
                 );
                 break;
