@@ -4,21 +4,46 @@ import 'package:image_picker/image_picker.dart';
 import 'home_screen.dart';
 
 
-class EventCreator extends StatelessWidget {
+class EventCreator extends StatefulWidget {
+  @override
+  State<EventCreator> createState() => _EventCreatorState();
+}
+
+class _EventCreatorState extends State<EventCreator> {
   final double fem = 1.0;
   final double ffem = 1.0;
+  String titleText = ''; // Variable to store the title text
+  String eventInfoText = ''; // Variable to store the event info text
+  DateTime? selectedDate; // Variable to store the selected date
   File? _image; // Variable to store the selected image file
+
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      // Update the state to rebuild the widget with the selected image
-      // You might want to use StatefulWidget and manage the state accordingly
-      // For simplicity, I'll just print the path of the selected image here
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+
       print("Selected image: ${pickedFile.path}");
     } else {
       print("No image selected");
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
     }
   }
 
@@ -59,17 +84,28 @@ class EventCreator extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(26),
                     color: Colors.grey, // Set the default background color here
-                    image: _image != null
-                        ? DecorationImage(
-                      image: FileImage(_image!), // Set the selected image as the background
-                      fit: BoxFit.cover,
-                    )
-                        : null,
                   ),
+                  child: _image != null
+                      ? ClipRRect(
+                    borderRadius: BorderRadius.circular(26),
+                    child: ColorFiltered(
+                      colorFilter: ColorFilter.mode(
+                        Colors.black.withOpacity(0.45), // Set the opacity here
+                        BlendMode.dstATop,
+                      ),
+                      child: Image.file(
+                        _image!,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  )
+                      : null,
                 ),
               ),
             ),
           ),
+
+          // New Positioned Text
           // New Positioned Text
           Positioned(
             left: 17,
@@ -78,8 +114,12 @@ class EventCreator extends StatelessWidget {
               child: SizedBox(
                 width: 364,
                 height: 95,
-                child: Text(
-                  'Type your title here...',
+                child: TextField(
+                  onChanged: (text) {
+                    setState(() {
+                      titleText = text;
+                    });
+                  },
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 39,
@@ -87,22 +127,30 @@ class EventCreator extends StatelessWidget {
                     height: 1.2125,
                     color: Color(0xffffffff),
                   ),
+                  decoration: InputDecoration(
+                    hintText: 'Type your title here...',
+                    hintStyle: TextStyle(
+                      color: Color(0xffffffff),
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
           Positioned(
             left: 40 * fem,
-            top: 291.5 * fem,
+            top: 290.5 * fem,
             child: Align(
               child: SizedBox(
-                width: 150 * fem, // Increase the width to accommodate the text
+                width: 183 * fem,
                 height: 140 * fem,
                 child: Text(
-                  'Select data here...',
+                  selectedDate != null
+                      ? "${selectedDate!.toLocal()}".split(' ')[0] // Display the selected date
+                      : 'Select date by clicking the icon...', // Display the hint text if no date is selected
                   style: TextStyle(
                     fontFamily: 'Inter',
-                    fontSize: 17,
+                    fontSize: 17 * ffem,
                     fontWeight: FontWeight.w900,
                     height: 1.2125 * ffem / fem,
                     color: Color(0xffffffff),
@@ -180,14 +228,26 @@ class EventCreator extends StatelessWidget {
               child: SizedBox(
                 width: 364,
                 height: 200,
-                child: Text(
-                  'Type your text here...',
+                child: TextField(
+                  onChanged: (text) {
+                    setState(() {
+                      eventInfoText = text;
+                    });
+                  },
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     height: 1.5,
                     color: Color(0xffffffff),
+                  ),
+                  maxLines: null, // Allow the text field to expand vertically as needed
+                  expands: true, // Allow the text field to take as much vertical space as needed
+                  decoration: InputDecoration(
+                    hintText: 'Type your text here...',
+                    hintStyle: TextStyle(
+                      color: Color(0xffffffff),
+                    ),
                   ),
                 ),
               ),
@@ -220,8 +280,12 @@ class EventCreator extends StatelessWidget {
               child: SizedBox(
                 width: 364,
                 height: 200,
-                child: Text(
-                  'Type your text here...',
+                child: TextField(
+                  onChanged: (text) {
+                    setState(() {
+                      eventInfoText = text;
+                    });
+                  },
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 18,
@@ -229,10 +293,19 @@ class EventCreator extends StatelessWidget {
                     height: 1.5,
                     color: Color(0xffffffff),
                   ),
+                  maxLines: null, // Allow the text field to expand vertically as needed
+                  expands: true, // Allow the text field to take as much vertical space as needed
+                  decoration: InputDecoration(
+                    hintText: 'Type your text here...',
+                    hintStyle: TextStyle(
+                      color: Color(0xffffffff),
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
+
           Positioned(
             left: 29 * fem,
             top: 766 * fem, // Adjust the top position based on your layout
@@ -283,12 +356,17 @@ class EventCreator extends StatelessWidget {
             ),
           ),
           Positioned(
-            left: 12 * fem, // Adjust left position as needed
-            top: 290 * fem, // Adjust top position as needed
-            child: Icon(
-              Icons.event,
-              color: Colors.white,
-              size: 24 * fem,
+            left: 1 * fem, // Adjust left position as needed
+            top: 275 * fem, // Adjust top position as needed
+            child: IconButton(
+              icon: Icon(
+                Icons.event,
+                color: Colors.white,
+                size: 24 * fem,
+              ),
+              onPressed: () {
+                _selectDate(context); // Open the date picker when the calendar icon is tapped
+              },
             ),
           ),
           // New Positioned for Location Icon
@@ -337,12 +415,12 @@ class EventCreator extends StatelessWidget {
               },
             ),
           ),
-
         ],
       ),
     );
   }
 }
+
 
 void main() {
   runApp(EventCreator());
