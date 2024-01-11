@@ -27,7 +27,16 @@ class EventManagerInfo extends StatelessWidget {
                   Color(0x45428699),
                   Color(0x005aa0b4),
                 ],
-                stops: <double>[0.5 , 0.543, 0.586, 1.029, 0.571, 0.514, 3.857, 3],
+                stops: <double>[
+                  0.5,
+                  0.543,
+                  0.586,
+                  1.029,
+                  0.571,
+                  0.514,
+                  3.857,
+                  3
+                ],
               ),
             ),
           ),
@@ -139,7 +148,8 @@ class EventManagerInfo extends StatelessWidget {
             ),
           ),
           Container(
-            margin: EdgeInsets.only(left: 30, top: 75.5 * fem), // Adjust the top margin accordingly
+            margin: EdgeInsets.only(
+                left: 30, top: 75.5 * fem), // Adjust the top margin accordingly
             child: Align(
               alignment: Alignment.centerLeft,
               child: SizedBox(
@@ -179,7 +189,9 @@ class EventManagerInfo extends StatelessWidget {
             ),
           ),
           Container(
-            margin: EdgeInsets.only(left: 30, top: 505.5 * fem), // Adjust the top margin accordingly
+            margin: EdgeInsets.only(
+                left: 30,
+                top: 505.5 * fem), // Adjust the top margin accordingly
             child: Align(
               alignment: Alignment.centerLeft,
               child: SizedBox(
@@ -245,7 +257,8 @@ class EventManagerInfo extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(23 * fem),
                   ),
-                  elevation: 0, // Set elevation to 0 as the shadow is provided by the Container
+                  elevation:
+                      0, // Set elevation to 0 as the shadow is provided by the Container
                   primary: Color(0xff7c98a1),
                 ),
                 child: Container(
@@ -304,7 +317,8 @@ class EventManagerInfo extends StatelessWidget {
               icon: Icon(Icons.arrow_back),
               color: Colors.white,
               onPressed: () {
-                Navigator.pop(context); // Navigate back when the back button is pressed
+                Navigator.pop(
+                    context); // Navigate back when the back button is pressed
               },
             ),
           ),

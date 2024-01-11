@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(event());
-}
-
 class event extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -22,7 +18,8 @@ class FundraiserEvent {
   DateTime date;
   String description;
 
-  FundraiserEvent({required this.name, required this.date, required this.description});
+  FundraiserEvent(
+      {required this.name, required this.date, required this.description});
 }
 
 class HomeScreen extends StatefulWidget {
@@ -88,7 +85,8 @@ class _HomeScreenState extends State<HomeScreen> {
 class CreateEventScreen extends StatelessWidget {
   final TextEditingController eventNameController = TextEditingController();
   final TextEditingController eventDateController = TextEditingController();
-  final TextEditingController eventDescriptionController = TextEditingController();
+  final TextEditingController eventDescriptionController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
