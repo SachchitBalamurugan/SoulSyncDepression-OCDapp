@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
 import '../widgets/eventCard.dart';
 import '../widgets/eventCategory.dart';
 import 'EventCreator.dart';
@@ -13,10 +13,36 @@ IconData partyHatIcon =
 IconData groupIcon =
     Icons.group; // Replace with the appropriate group of people icon
 
-class EventManager extends StatelessWidget {
-  final double fem = 1.0; // Replace with your fem value
-  final double ffem = 1.0; // Replace with your ffem value
+class EventManager extends StatefulWidget {
+  @override
+  State<EventManager> createState() => _EventManagerState();
+}
 
+class _EventManagerState extends State<EventManager> {
+  DateTime? selectedDate;
+  late String month = 'January';
+
+  _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        month = DateFormat.MMMM().format(selectedDate!);
+      });
+    }
+    print(selectedDate);
+  }
+
+  final double fem = 1.0;
+  // Replace with your fem value
+  final double ffem = 1.0;
+  // Replace with your ffem value
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,7 +82,30 @@ class EventManager extends StatelessWidget {
                     ),
                   ),
                 ),
-                EventCategory(txt: 'January'),
+                Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: ElevatedButton(
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: EventCategory(txt: month),
+                      ),
+                      onPressed: () {
+                        _selectDate(
+                            context); // Open the date picker when the calendar icon is tapped
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Color(0xff335660)),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                15.0), // Adjust the radius as needed
+                          ),
+                        ),
+                      )),
+                ),
+
                 Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: Container(
@@ -169,7 +218,7 @@ class EventManager extends StatelessWidget {
                         borderRadius: BorderRadius.circular(23 * fem),
                       ),
                       elevation: 2 * fem,
-                      primary: Color(0xff335660),
+                      backgroundColor: Color(0xff335660),
                     ),
                     child: Container(
                       width: 362 * fem, // Adjust the width based on your layout

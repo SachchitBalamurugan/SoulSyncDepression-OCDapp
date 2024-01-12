@@ -259,7 +259,7 @@ class EventManagerInfo extends StatelessWidget {
                   ),
                   elevation:
                       0, // Set elevation to 0 as the shadow is provided by the Container
-                  primary: Color(0xff7c98a1),
+                  backgroundColor: Color(0xff7c98a1),
                 ),
                 child: Container(
                   width: 362 * fem, // Adjust the width based on your layout
@@ -326,8 +326,4 @@ class EventManagerInfo extends StatelessWidget {
       ),
     );
   }
-}
-
-void main() {
-  runApp(EventManagerInfo());
 }
