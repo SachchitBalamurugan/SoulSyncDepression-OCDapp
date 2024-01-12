@@ -28,36 +28,151 @@ class _EventCreatorState extends State<EventCreator> {
   final double ffem = 1.0;
 
   // Variable to store the selected date
-  dynamic _image; // Variable to store the selected image file
+  PlatformFile? _image; // Variable to store the selected image file
   String? fileName;
   late String titleText; // Variable to store the title text
   late String eventInfoText; // Variable to store the event info text
   late String sponsors;
   DateTime? selectedDate;
-  // final _uuid = const Uuid();
+  final _uuid = Uuid();
 
-  _pickImage() async {
-    FilePickerResult? result = await FilePicker.platform
-        .pickFiles(allowMultiple: false, type: FileType.image);
-    var status = await Permission.storage.status;
-    if (status.isGranted) {
-      // Permission is granted, proceed with file operations
-      if (result != null) {
-        setState(() {
-          _image = result.files.first.bytes;
-          fileName = result.files.first.name;
-        });
-      }
-      print(result);
-    } else {
-      // Permission is not granted, request it
-      print(status);
-    }
+  //----------------------
+  // _pickImage() async {
+  //   var status = await Permission.photos.status;
+  //
+  //   if (status.isGranted) {
+  //     try {
+  //       // Proceed with file picking
+  //       FilePickerResult? result =
+  //           await FilePicker.platform.pickFiles(type: FileType.image);
+  //       if (result != null) {
+  //         setState(() {
+  //           _image = result.files.first.bytes;
+  //           fileName = result.files.first.name;
+  //         });
+  //       }
+  //     } catch (error) {
+  //       // Handle errors
+  //       print('Error picking image: $error');
+  //     }
+  //   } else {
+  //     // Request permission
+  //     status = await Permission.photos.request();
+  //     if (status.isGranted) {
+  //       // Permission granted, retry file picking
+  //       try {
+  //         FilePickerResult? result =
+  //             await FilePicker.platform.pickFiles(type: FileType.image);
+  //
+  //         if (result != null) {
+  //           // setState(() {
+  //           //
+  //           // });
+  //           _image = result.files.first.bytes;
+  //           fileName = result.files.first.name;
+  //         }
+  //       } catch (error) {
+  //         // Handle any errors during file picking
+  //         print('Error picking image: $error');
+  //         // Show a user-friendly error message or notification
+  //       }
+  //     } else {
+  //       // Permission denied, handle gracefully
+  //       print('Storage permission denied');
+  //       // Show user-friendly message explaining the need for permission
+  //     }
+  //   }
+  // }
+  // _pickImage() async {
+  //   var status = await Permission.storage.status;
+  //
+  //   if (status.isGranted) {
+  //     try {
+  //       // Proceed with file picking
+  //       FilePickerResult? result =
+  //           await FilePicker.platform.pickFiles(type: FileType.image);
+  //       if (result != null) {
+  //         setState(() {
+  //           _image = result.files.first.bytes;
+  //           fileName = result.files.first.name;
+  //         });
+  //       }
+  //     } catch (error) {
+  //       // Handle errors
+  //       print('Error picking image: $error');
+  //     }
+  //   } else {
+  //     // Request permission
+  //     status = await Permission.storage.request();
+  //     if (status.isGranted) {
+  //       // Permission granted, retry file picking
+  //       try {
+  //         FilePickerResult? result =
+  //             await FilePicker.platform.pickFiles(type: FileType.image);
+  //
+  //         if (result != null) {
+  //           setState(() {
+  //             _image = result.files.first.bytes;
+  //             fileName = result.files.first.name;
+  //           });
+  //         }
+  //       } catch (error) {
+  //         // Handle any errors during file picking
+  //         print('Error picking image: $error');
+  //         // Show a user-friendly error message or notification
+  //       }
+  //     } else {
+  //       // Permission denied, handle gracefully
+  //       print('Storage permission denied');
+  //       // Show user-friendly message explaining the need for permission
+  //     }
+  //   }
+  // }
+
+// --------------------------
+//   _pickImage() async {
+//     // Request storage permission
+//     var status = await Permission.photos.request();
+//
+//     if (status.isGranted) {
+//       // Access granted, proceed with file picker
+//       try {
+//         FilePickerResult? result =
+//             await FilePicker.platform.pickFiles(type: FileType.image);
+//
+//         if (result != null) {
+//           setState(() {
+//             _image = result.files.first.bytes;
+//             fileName = result.files.first.name;
+//           });
+//         }
+//       } catch (error) {
+//         // Handle any errors during file picking
+//         print('Error picking image: $error');
+//         // Show a user-friendly error message or notification
+//       }
+//     } else {
+//       // Permission denied, handle the denial
+//       print('Storage permission denied');
+//       // Show an appropriate message to the user, explaining why the permission is needed
+//     }
+//   }
+
+  Future _pickImage() async {
+    final result = await FilePicker.platform.pickFiles();
+    if (result == null) return;
+
+    setState(() {
+      _image = result.files.first;
+    });
   }
 
-  _uploadEventBannerToStorage(dynamic image) async {
-    Reference ref = _storage.ref().child('EventImages').child(fileName!);
-    UploadTask uploadTask = ref.putData(image);
+  _uploadEventBannerToStorage(PlatformFile image) async {
+    fileName = _uuid.v4().toString();
+    final path = 'EventImages/$fileName';
+    final file = File(_image!.path!);
+    Reference ref = _storage.ref().child(path);
+    UploadTask uploadTask = ref.putFile(file);
 
     TaskSnapshot snapshot = await uploadTask;
     String downloadUrl = await snapshot.ref.getDownloadURL();
@@ -67,7 +182,7 @@ class _EventCreatorState extends State<EventCreator> {
 
   uploadEvent() async {
     if (_formkey.currentState!.validate()) {
-      String imageUrl = await _uploadEventBannerToStorage(_image);
+      String imageUrl = await _uploadEventBannerToStorage(_image!);
 
       await _firestore.collection('events').doc(fileName).set({
         'image': imageUrl,
@@ -176,6 +291,13 @@ class _EventCreatorState extends State<EventCreator> {
                             ),
                           ),
                         ),
+                        if (_image != null)
+                          Container(
+                            color: Colors.blue[100],
+                            child: Center(
+                              child: Text(_image!.name),
+                            ),
+                          ),
                         // Upload Icon
                         IconButton(
                           iconSize: 102 * fem,
@@ -183,7 +305,7 @@ class _EventCreatorState extends State<EventCreator> {
                             Icons.upload,
                           ),
                           color: Colors.white,
-                          onPressed: () {
+                          onPressed: () async {
                             _pickImage(); // Open the image picker when the upload icon is tapped
                           },
                         ),
@@ -270,103 +392,112 @@ class _EventCreatorState extends State<EventCreator> {
                   //     : null),
 
                   // Event Info
-                  Text(
-                    'Event info:',
-                    style: TextStyle(
-                      fontFamily:
-                          'Inter', // You can specify the font family here
-                      fontSize: 30 * ffem,
-                      fontWeight: FontWeight.w900,
-                      height: 1.2125 * ffem / fem,
-                      color: Color(0xffffffff),
-                    ),
-                  ),
-                  TextFormField(
-                    onChanged: (value) {
-                      eventInfoText = value;
-                    },
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xffffffff),
-                    ), // Allow the text field to take as much vertical space as needed
-                    decoration: InputDecoration(
-                      hintText: 'Type your text here...',
-                      hintStyle: TextStyle(
-                        color: Color(0xffffffff),
-                      ),
-                    ),
-                  ),
-                  //Sponsors/Special Guests
-                  Text(
-                    'Sponsors/Special Guests:',
-                    style: TextStyle(
-                      fontFamily:
-                          'Inter', // You can specify the font family here
-                      fontSize: 30 * ffem,
-                      fontWeight: FontWeight.w900,
-                      height: 1.2125 * ffem / fem,
-                      color: Color(0xffffffff),
-                    ),
-                  ),
-                  TextFormField(
-                    onChanged: (value) {
-                      eventInfoText = value;
-                    },
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xffffffff),
-                    ),
-                    // Allow the text field to take as much vertical space as needed
-                    decoration: InputDecoration(
-                      hintText: 'Type your text here...',
-                      hintStyle: TextStyle(
-                        color: Color(0xffffffff),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      uploadEvent();
-                      // Navigate to another screen or add your button click logic here
-                      // TODO: UNCOMMENT FOR OTHER FUNCTIONALITIES
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //       builder: (context) => LocationSelectionScreen()),
-                      // );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(23 * fem),
-                      ),
-                      elevation:
-                          0, // Set elevation to 0 as the shadow is provided by the Container
-                      backgroundColor: Color(0xff7c98a1),
-                    ),
-                    child: Center(
-                      child: Container(
-                        width:
-                            362 * fem, // Adjust the width based on your layout
-                        height:
-                            61 * fem, // Adjust the height based on your layout
-                        child: Center(
-                          child: Text(
-                            'Create an Event',
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 20 * ffem,
-                              fontWeight: FontWeight.w900,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Event Info
+                        Text(
+                          'Event info:',
+                          style: TextStyle(
+                            fontFamily:
+                                'Inter', // You can specify the font family here
+                            fontSize: 30 * ffem,
+                            fontWeight: FontWeight.w900,
+                            height: 1.2125 * ffem / fem,
+                            color: Color(0xffffffff),
+                          ),
+                        ),
+                        TextFormField(
+                          onChanged: (value) {
+                            eventInfoText = value;
+                          },
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xffffffff),
+                          ), // Allow the text field to take as much vertical space as needed
+                          decoration: InputDecoration(
+                            hintText: 'Type your text here...',
+                            hintStyle: TextStyle(
                               color: Color(0xffffffff),
                             ),
                           ),
                         ),
-                      ),
+                        //Sponsors/Special Guests
+                        Text(
+                          'Sponsors/Special Guests:',
+                          style: TextStyle(
+                            fontFamily:
+                                'Inter', // You can specify the font family here
+                            fontSize: 30 * ffem,
+                            fontWeight: FontWeight.w900,
+                            height: 1.2125 * ffem / fem,
+                            color: Color(0xffffffff),
+                          ),
+                        ),
+                        TextFormField(
+                          onChanged: (value) {
+                            sponsors = value;
+                          },
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xffffffff),
+                          ),
+                          // Allow the text field to take as much vertical space as needed
+                          decoration: InputDecoration(
+                            hintText: 'Type your text here...',
+                            hintStyle: TextStyle(
+                              color: Color(0xffffffff),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            uploadEvent();
+                            // Navigate to another screen or add your button click logic here
+                            // TODO: UNCOMMENT FOR OTHER FUNCTIONALITIES
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //       builder: (context) => LocationSelectionScreen()),
+                            // );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(23 * fem),
+                            ),
+                            elevation:
+                                0, // Set elevation to 0 as the shadow is provided by the Container
+                            backgroundColor: Color(0xff7c98a1),
+                          ),
+                          child: Center(
+                            child: Container(
+                              width: 362 *
+                                  fem, // Adjust the width based on your layout
+                              height: 61 *
+                                  fem, // Adjust the height based on your layout
+                              child: Center(
+                                child: Text(
+                                  'Create an Event',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 20 * ffem,
+                                    fontWeight: FontWeight.w900,
+                                    color: Color(0xffffffff),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
