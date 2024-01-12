@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
+import '../consts/firebase_constants.dart';
 import '../widgets/eventCard.dart';
 import '../widgets/eventCategory.dart';
 import 'home_screen.dart';
@@ -190,6 +191,7 @@ class _EventCreatorState extends State<EventCreator> {
         'eventInfo': eventInfoText, // Variable to store the event info text
         'sponsors/specialGuests': sponsors,
         'date': selectedDate,
+        'added_by': currentUser!.uid,
       }).whenComplete(() {
         setState(() {
           _image = null;

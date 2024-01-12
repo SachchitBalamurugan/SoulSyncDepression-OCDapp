@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../consts/firebase_constants.dart';
+import '../consts/firestore_services.dart';
 import '../widgets/eventCard.dart';
 import '../widgets/eventCategory.dart';
 import 'EventCreator.dart';
@@ -14,30 +17,10 @@ IconData groupIcon =
     Icons.group; // Replace with the appropriate group of people icon
 
 class BookingManager extends StatelessWidget {
-  final double fem = 1.0; // Replace with your fem value
-  final double ffem = 1.0; // Replace with your ffem value
+// Replace with your ffem value
 
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   backgroundColor: Colors.blueGrey,
-    //   body: SafeArea(
-    //     child: SingleChildScrollView(
-    //       child: Column(
-    //         children: [
-    //           Expanded(
-    //             child: Container(
-    //               child: Text('Hello'),
-    //             ),
-    //           ),
-    //           Expanded(
-    //             child: Text('Another Test'),
-    //           ),
-    //         ],
-    //       ),
-    //     ),
-    //   ),
-    // );
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -68,23 +51,64 @@ class BookingManager extends StatelessWidget {
                     'Manage your \nEvents!',
                     style: TextStyle(
                       fontFamily: 'Inter',
-                      fontSize: 39 * ffem,
+                      fontSize: 39,
                       fontWeight: FontWeight.w900,
-                      height: 1.2125 * ffem / fem,
+                      height: 1.2125,
                       color: Color(0xffffffff),
                     ),
                   ),
                 ),
                 EventCategory(txt: 'Booked'),
-                EventCard(subject: 'Fundraiser in Ohio Dr'),
-                EventCard(subject: 'Fundraiser in WDC'),
+                EventCard(
+                  evTitle: 'Fundraiser in Ohio Dr',
+                  imgUrl:
+                      'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
+                  evDate: DateTime.now(),
+                ),
+                EventCard(
+                  evTitle: 'Fundraiser in WDC',
+                  imgUrl:
+                      'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
+                  evDate: DateTime.now(),
+                ),
                 EventCategory(txt: 'Your Events'),
-                EventCard(subject: 'Fundraiser in LA'),
-                EventCard(subject: 'Fundraiser in Vegas'),
-                EventCard(subject: 'Fundraiser in UK'),
-                EventCard(subject: 'Fundraiser in LA'),
-                EventCard(subject: 'Fundraiser in Vegas'),
-                EventCard(subject: 'Fundraiser in UK'),
+                StreamBuilder(
+                  stream: FirestoreServices.getUserEvents(currentUser!.uid),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (snapshot.data!.docs.isEmpty) {
+                      return Center(
+                        child: Text("No Event Available"),
+                      );
+                    } else {
+                      var data = snapshot.data!.docs;
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ListView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: data.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return EventCard(
+                                  evTitle: "${data[index]['title']}",
+                                  imgUrl: "${data[index]['image']}",
+                                  evDate: DateTime.fromMicrosecondsSinceEpoch(
+                                      data[index]['date']
+                                          .microsecondsSinceEpoch),
+                                  // date: data[index]['date'],
+                                  // ),
+                                );
+                              }),
+                        ],
+                      );
+                    }
+                  },
+                ),
               ],
             ),
           ),

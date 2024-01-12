@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 
 class EventCard extends StatelessWidget {
-  const EventCard({
+  EventCard({
     super.key,
-    required this.subject,
+    required this.evTitle,
+    required this.evDate,
+    required this.imgUrl,
   });
+
   final double fem = 1.0; // Replace with your fem value
   final double ffem = 1.0;
-  final String subject;
+  final String evTitle;
+  final DateTime evDate;
+  final String imgUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +29,7 @@ class EventCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '$subject',
+                '$evTitle',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 20 * ffem,
@@ -46,7 +51,7 @@ class EventCard extends StatelessWidget {
                   ),
                   SizedBox(width: 5 * fem),
                   Text(
-                    'Jan 12, 2024',
+                    '$evDate',
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 11 * ffem,
@@ -76,7 +81,7 @@ class EventCard extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(14 * fem),
               child: Image.network(
-                'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
+                '$imgUrl',
                 fit: BoxFit.cover,
               ),
             ),

@@ -1,9 +1,11 @@
 // ignore_for_file: depend_on_referenced_packages
 
+import 'package:SoulSync/controllers/event_controller.dart';
 import 'package:SoulSync/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/login_page.dart';
 import 'screens/mood_tracker.dart';
@@ -14,7 +16,11 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(GetMaterialApp(
+      initialBinding: BindingsBuilder(() {
+        Get.put(EventController());
+      }),
+      home: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

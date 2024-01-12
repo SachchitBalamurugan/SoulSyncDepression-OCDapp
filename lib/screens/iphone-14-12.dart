@@ -265,11 +265,34 @@ class _EventManagerState extends State<EventManager> {
                 ),
                 SizedBox(height: 8.0),
                 EventCategory(txt: 'Events'),
-                EventCard(subject: 'Fundraiser in Ohio Dr'),
-                EventCard(subject: 'Fundraiser in WDC'),
-                EventCard(subject: 'Fundraiser in LA'),
-                EventCard(subject: 'Fundraiser in Vegas'),
-                EventCard(subject: 'Fundraiser in UK'),
+                EventCard(
+                  evTitle: 'Fundraiser in WDC',
+                  imgUrl:
+                      'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
+                  evDate: DateTime.now(),
+                ),
+                EventCard(
+                  evTitle: 'Fundraiser in WDC',
+                  imgUrl:
+                      'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
+                  evDate: DateTime.now(),
+                ),
+                EventCard(
+                  evTitle: 'Fundraiser in WDC',
+                  imgUrl:
+                      'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
+                  evDate: DateTime.now(),
+                ),
+                EventCard(
+                  evTitle: 'Fundraiser in WDC',
+                  imgUrl:
+                      'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
+                  evDate: DateTime.now(),
+                ),
+                // EventCard(subject: 'Fundraiser in WDC'),
+                // EventCard(subject: 'Fundraiser in LA'),
+                // EventCard(subject: 'Fundraiser in Vegas'),
+                // EventCard(subject: 'Fundraiser in UK'),
               ],
             ),
           ),
