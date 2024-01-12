@@ -1,9 +1,11 @@
 import 'dart:io'; // Add this import for File class
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import '../consts/firebase_constants.dart';
 import '../widgets/eventCard.dart';
 import '../widgets/eventCategory.dart';
@@ -190,7 +192,7 @@ class _EventCreatorState extends State<EventCreator> {
         'title': titleText, // Variable to store the title text
         'eventInfo': eventInfoText, // Variable to store the event info text
         'sponsors/specialGuests': sponsors,
-        'date': selectedDate,
+        'date': "${selectedDate!.toLocal()}".split(' ')[0],
         'added_by': currentUser!.uid,
       }).whenComplete(() {
         setState(() {

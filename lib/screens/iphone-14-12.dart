@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../consts/firebase_constants.dart';
+import '../consts/firestore_services.dart';
 import '../widgets/eventCard.dart';
 import '../widgets/eventCategory.dart';
 import 'EventCreator.dart';
@@ -105,7 +108,7 @@ class _EventManagerState extends State<EventManager> {
                         ),
                       )),
                 ),
-
+                // Scrolling Days
                 Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: Container(
@@ -201,7 +204,7 @@ class _EventManagerState extends State<EventManager> {
                     ),
                   ),
                 ),
-                // Elevated Button
+                // Create Event Button
                 Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: ElevatedButton(
@@ -264,31 +267,71 @@ class _EventManagerState extends State<EventManager> {
                   ],
                 ),
                 SizedBox(height: 8.0),
+                // Events on The Day
                 EventCategory(txt: 'Events'),
-                EventCard(
-                  evTitle: 'Fundraiser in WDC',
-                  imgUrl:
-                      'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
-                  evDate: DateTime.now(),
+                // Events List
+
+                StreamBuilder(
+                  stream: FirestoreServices.getEventsByDate(
+                      "${selectedDate?.toLocal()}".split(' ')[0]),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (snapshot.data!.docs.isEmpty) {
+                      return Center(
+                        child: Text("No Event Available"),
+                      );
+                    } else {
+                      var data = snapshot.data!.docs;
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ListView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: data.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return EventCard(
+                                  evTitle: "${data[index]['title']}",
+                                  imgUrl: "${data[index]['image']}",
+                                  evDate: "${data[index]['date']}",
+                                );
+                                // date: data[index]['date'],
+                                // ),
+                                // );
+                              }),
+                        ],
+                      );
+                    }
+                  },
                 ),
-                EventCard(
-                  evTitle: 'Fundraiser in WDC',
-                  imgUrl:
-                      'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
-                  evDate: DateTime.now(),
-                ),
-                EventCard(
-                  evTitle: 'Fundraiser in WDC',
-                  imgUrl:
-                      'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
-                  evDate: DateTime.now(),
-                ),
-                EventCard(
-                  evTitle: 'Fundraiser in WDC',
-                  imgUrl:
-                      'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
-                  evDate: DateTime.now(),
-                ),
+                // EventCard(
+                //   evTitle: 'Fundraiser in WDC',
+                //   imgUrl:
+                //       'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
+                //   evDate: DateTime.now(),
+                // ),
+                // EventCard(
+                //   evTitle: 'Fundraiser in WDC',
+                //   imgUrl:
+                //       'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
+                //   evDate: DateTime.now(),
+                // ),
+                // EventCard(
+                //   evTitle: 'Fundraiser in WDC',
+                //   imgUrl:
+                //       'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
+                //   evDate: DateTime.now(),
+                // ),
+                // EventCard(
+                //   evTitle: 'Fundraiser in WDC',
+                //   imgUrl:
+                //       'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
+                //   evDate: DateTime.now(),
+                // ),
                 // EventCard(subject: 'Fundraiser in WDC'),
                 // EventCard(subject: 'Fundraiser in LA'),
                 // EventCard(subject: 'Fundraiser in Vegas'),

@@ -11,7 +11,7 @@ class EventCard extends StatelessWidget {
   final double fem = 1.0; // Replace with your fem value
   final double ffem = 1.0;
   final String evTitle;
-  final DateTime evDate;
+  final String evDate;
   final String imgUrl;
 
   @override

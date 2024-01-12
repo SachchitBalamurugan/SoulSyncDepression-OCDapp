@@ -63,13 +63,13 @@ class BookingManager extends StatelessWidget {
                   evTitle: 'Fundraiser in Ohio Dr',
                   imgUrl:
                       'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
-                  evDate: DateTime.now(),
+                  evDate: '2024-01-13',
                 ),
                 EventCard(
                   evTitle: 'Fundraiser in WDC',
                   imgUrl:
                       'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
-                  evDate: DateTime.now(),
+                  evDate: '2024-01-13',
                 ),
                 EventCategory(txt: 'Your Events'),
                 StreamBuilder(
@@ -97,9 +97,7 @@ class BookingManager extends StatelessWidget {
                                 return EventCard(
                                   evTitle: "${data[index]['title']}",
                                   imgUrl: "${data[index]['image']}",
-                                  evDate: DateTime.fromMicrosecondsSinceEpoch(
-                                      data[index]['date']
-                                          .microsecondsSinceEpoch),
+                                  evDate: "${data[index]['date']}",
                                   // date: data[index]['date'],
                                   // ),
                                 );
