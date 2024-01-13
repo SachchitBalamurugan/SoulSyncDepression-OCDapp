@@ -1,3 +1,4 @@
+import 'package:SoulSync/screens/test_event_details_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -46,6 +47,8 @@ class _EventManagerState extends State<EventManager> {
   // Replace with your fem value
   final double ffem = 1.0;
   // Replace with your ffem value
+  bool isHovered = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -289,54 +292,93 @@ class _EventManagerState extends State<EventManager> {
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          // New
                           ListView.builder(
                               physics: NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
                               itemCount: data.length,
                               itemBuilder: (BuildContext context, int index) {
-                                return EventCard(
-                                  isHovered: false,
-                                  evTitle: "${data[index]['title']}",
-                                  imgUrl: "${data[index]['image']}",
-                                  evDate: "${data[index]['date']}",
+                                // NEW FUNCTIONS
+                                void viewEventDetails(int index) {
+                                  // Access event details from data[index] and navigate to a details screen
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EventDetailsScreen(
+                                          eventData: data[index]),
+                                    ),
+                                  );
+                                }
+
+                                void deleteEvent(int index) async {
+                                  try {
+                                    await FirestoreServices.deleteDocument(
+                                        data[index].id);
+                                    setState(() =>
+                                        data.removeAt(index)); // Update UI
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Event deleted')),
+                                    );
+                                  } catch (error) {
+                                    // Handle any errors that occur during deletion
+                                    print(error);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content:
+                                              Text('Failed to delete event')),
+                                    );
+                                  }
+                                }
+                                // NEW FUNCTIONS
+
+                                return MouseRegion(
+                                  onHover: (event) {
+                                    setState(() {
+                                      isHovered = true;
+                                    });
+                                    // Handle hover state changes (as discussed previously)
+                                  },
+                                  onExit: (event) {
+                                    setState(() => isHovered = false);
+                                  },
+                                  child: EventCard(
+                                    isHovered: isHovered,
+                                    // new inputs
+                                    id: data[index].id,
+                                    onDeletePressed: () => deleteEvent(index),
+                                    onViewPressed: () =>
+                                        viewEventDetails(index),
+                                    //
+                                    evTitle: "${data[index]['title']}",
+                                    imgUrl: "${data[index]['image']}",
+                                    evDate: "${data[index]['date']}",
+                                    // date: data[index]['date'],
+                                  ),
                                 );
-                                // date: data[index]['date'],
-                                // ),
-                                // );
                               }),
+
+                          // Old
+                          // ListView.builder(
+                          //     physics: NeverScrollableScrollPhysics(),
+                          //     shrinkWrap: true,
+                          //     itemCount: data.length,
+                          //     itemBuilder: (BuildContext context, int index) {
+                          //       return EventCard(
+                          //         isHovered: false,
+                          //         evTitle: "${data[index]['title']}",
+                          //         imgUrl: "${data[index]['image']}",
+                          //         evDate: "${data[index]['date']}",
+                          //       );
+                          //       // date: data[index]['date'],
+                          //       // ),
+                          //       // );
+                          //     }),
                         ],
                       );
                     }
                   },
                 ),
-                // EventCard(
-                //   evTitle: 'Fundraiser in WDC',
-                //   imgUrl:
-                //       'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
-                //   evDate: DateTime.now(),
-                // ),
-                // EventCard(
-                //   evTitle: 'Fundraiser in WDC',
-                //   imgUrl:
-                //       'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
-                //   evDate: DateTime.now(),
-                // ),
-                // EventCard(
-                //   evTitle: 'Fundraiser in WDC',
-                //   imgUrl:
-                //       'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
-                //   evDate: DateTime.now(),
-                // ),
-                // EventCard(
-                //   evTitle: 'Fundraiser in WDC',
-                //   imgUrl:
-                //       'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
-                //   evDate: DateTime.now(),
-                // ),
-                // EventCard(subject: 'Fundraiser in WDC'),
-                // EventCard(subject: 'Fundraiser in LA'),
-                // EventCard(subject: 'Fundraiser in Vegas'),
-                // EventCard(subject: 'Fundraiser in UK'),
               ],
             ),
           ),

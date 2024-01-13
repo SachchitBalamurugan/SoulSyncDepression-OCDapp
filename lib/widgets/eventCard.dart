@@ -3,11 +3,20 @@ import 'package:flutter/material.dart';
 class EventCard extends StatelessWidget {
   EventCard({
     super.key,
+    required this.id,
+    required this.onDeletePressed,
+    required this.onViewPressed,
     required this.isHovered,
     required this.evTitle,
     required this.evDate,
     required this.imgUrl,
   });
+
+  // new inputs
+  final String id;
+  final VoidCallback onDeletePressed;
+  final VoidCallback onViewPressed;
+  //
 
   final double fem = 1.0; // Replace with your fem value
   final double ffem = 1.0;
@@ -96,29 +105,38 @@ class EventCard extends StatelessWidget {
             ],
           ),
           //----------
-          //HOVER EFFECT TO DELETE AND VIEW
-          // Visibility(
-          //     visible: isHovered,
-          //     child: Positioned.fill(
-          //         child: Container(
-          //       child: Row(
-          //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //         children: [
-          //           TextButton(
-          //             style: ButtonStyle(
-          //               overlayColor:
-          //             ),
-          //             onPressed: () {},
-          //             child: Text('View Details'),
-          //           ),
-          //           TextButton(
-          //             onPressed: () {
-          //             },
-          //             child: Text('Delete'),
-          //           ),
-          //         ],
-          //       ),
-          //     ))),
+          // HOVER EFFECT TO DELETE AND VIEW
+          Visibility(
+              visible: isHovered,
+              child: Positioned.fill(
+                  child: Container(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(
+                            Colors.black.withOpacity(0.3)),
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                      ),
+                      onPressed: onViewPressed,
+                      child: Text('View Details'),
+                    ),
+                    TextButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(
+                            Colors.black.withOpacity(0.3)),
+                        foregroundColor: MaterialStateProperty.all(Colors.red),
+                      ),
+                      onPressed: onDeletePressed,
+                      child: Text('Delete'),
+                    ),
+                  ],
+                ),
+              ))),
+          // Hover Effect
         ],
       ),
     );

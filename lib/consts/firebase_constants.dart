@@ -12,5 +12,6 @@ const socialPostsCollection = "Social Posts";
 const commentsCollection = "comments";
 const coursesCollection = "courses";
 const eventsCollection = "events";
+const bookedEventsCollection = "bookedEvents";
 const moodDataCollection = 'moodData';
 const usersCollection = "users";

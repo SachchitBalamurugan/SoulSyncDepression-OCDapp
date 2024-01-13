@@ -1,3 +1,4 @@
+import 'package:SoulSync/screens/test_event_details_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -24,6 +25,9 @@ class BookingManager extends StatefulWidget {
 class _BookingManagerState extends State<BookingManager> {
   bool isHovered = false;
 // Replace with your ffem value
+
+  //
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,21 +67,98 @@ class _BookingManagerState extends State<BookingManager> {
                     ),
                   ),
                 ),
+
+                // Booked Events
                 EventCategory(txt: 'Booked'),
-                EventCard(
-                  isHovered: false,
-                  evTitle: 'Fundraiser in Ohio Dr',
-                  imgUrl:
-                      'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
-                  evDate: '2024-01-13',
+                StreamBuilder(
+                  stream:
+                      FirestoreServices.getUserBookedEvents(currentUser!.uid),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (snapshot.data!.docs.isEmpty) {
+                      return Center(
+                        child: Text("You Haven't Booked any Event"),
+                      );
+                    } else {
+                      var data = snapshot.data!.docs;
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ListView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: data.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                // NEW FUNCTIONS
+                                void viewEventDetails(int index) {
+                                  // Access event details from data[index] and navigate to a details screen
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EventDetailsScreen(
+                                          eventData: data[index]),
+                                    ),
+                                  );
+                                }
+
+                                void deleteEvent(int index) async {
+                                  try {
+                                    await FirestoreServices.deleteDocument(
+                                        data[index].id);
+                                    setState(() =>
+                                        data.removeAt(index)); // Update UI
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Event deleted')),
+                                    );
+                                  } catch (error) {
+                                    // Handle any errors that occur during deletion
+                                    print(error);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content:
+                                              Text('Failed to delete event')),
+                                    );
+                                  }
+                                }
+                                // NEW FUNCTIONS
+
+                                return MouseRegion(
+                                  onHover: (event) {
+                                    setState(() {
+                                      isHovered = true;
+                                    });
+                                    // Handle hover state changes (as discussed previously)
+                                  },
+                                  onExit: (event) {
+                                    setState(() => isHovered = false);
+                                  },
+                                  child: EventCard(
+                                    isHovered: isHovered,
+                                    // new inputs
+                                    id: data[index].id,
+                                    onDeletePressed: () => deleteEvent(index),
+                                    onViewPressed: () =>
+                                        viewEventDetails(index),
+                                    //
+                                    evTitle: "${data[index]['title']}",
+                                    imgUrl: "${data[index]['image']}",
+                                    evDate: "${data[index]['date']}",
+                                    // date: data[index]['date'],
+                                  ),
+                                );
+                              }),
+                        ],
+                      );
+                    }
+                  },
                 ),
-                EventCard(
-                  isHovered: false,
-                  evTitle: 'Fundraiser in WDC',
-                  imgUrl:
-                      'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
-                  evDate: '2024-01-13',
-                ),
+
+                // Your Events
                 EventCategory(txt: 'Your Events'),
                 StreamBuilder(
                   stream: FirestoreServices.getUserEvents(currentUser!.uid),
@@ -101,6 +182,40 @@ class _BookingManagerState extends State<BookingManager> {
                               shrinkWrap: true,
                               itemCount: data.length,
                               itemBuilder: (BuildContext context, int index) {
+                                // NEW FUNCTIONS
+                                void viewEventDetails(int index) {
+                                  // Access event details from data[index] and navigate to a details screen
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EventDetailsScreen(
+                                          eventData: data[index]),
+                                    ),
+                                  );
+                                }
+
+                                void deleteEvent(int index) async {
+                                  try {
+                                    await FirestoreServices.deleteDocument(
+                                        data[index].id);
+                                    setState(() =>
+                                        data.removeAt(index)); // Update UI
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Event deleted')),
+                                    );
+                                  } catch (error) {
+                                    // Handle any errors that occur during deletion
+                                    print(error);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content:
+                                              Text('Failed to delete event')),
+                                    );
+                                  }
+                                }
+                                // NEW FUNCTIONS
+
                                 return MouseRegion(
                                   onHover: (event) {
                                     setState(() {
@@ -113,6 +228,12 @@ class _BookingManagerState extends State<BookingManager> {
                                   },
                                   child: EventCard(
                                     isHovered: isHovered,
+                                    // new inputs
+                                    id: data[index].id,
+                                    onDeletePressed: () => deleteEvent(index),
+                                    onViewPressed: () =>
+                                        viewEventDetails(index),
+                                    //
                                     evTitle: "${data[index]['title']}",
                                     imgUrl: "${data[index]['image']}",
                                     evDate: "${data[index]['date']}",
