@@ -343,7 +343,7 @@ class _EventManagerState extends State<EventManager> {
                                     setState(() => isHovered = false);
                                   },
                                   child: EventCard(
-                                    isHovered: isHovered,
+                                    isHovered: false,
                                     // new inputs
                                     id: data[index].id,
                                     onDeletePressed: () => deleteEvent(index),
