@@ -6,6 +6,7 @@ import '../screens/mood_tracker.dart';
 import '../screens/registration_base.dart';
 import '../widgets/bottomNavBar.dart';
 import '../screens/mood_tracker.dart';
+import 'forgot_pw_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
@@ -89,6 +90,29 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                SizedBox(height: 20.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return ForgotPasswordPage();
+                            },
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'Forgot Password?',
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 24.0),
                 ElevatedButton(
                   onPressed: () async {
@@ -102,13 +126,15 @@ class LoginScreen extends StatelessWidget {
                               builder: (context) => MoodTrackerScreen()));
                     } on FirebaseAuthException catch (e) {
                       if (e.code == 'user-not-found') {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
                           content: Text('No user found for that email'),
                           duration: Duration(milliseconds: 300),
                         ));
                         print('No user found for that email');
                       } else if (e.code == 'wrong-password') {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
                           content:
                               Text('Wrong password provided for that user'),
                           duration: Duration(milliseconds: 300),
@@ -123,7 +149,8 @@ class LoginScreen extends StatelessWidget {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.black, backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                    backgroundColor: Colors.white,
                     minimumSize: const Size(double.infinity,
                         48), // Set the minimum size (width and height) of the button
                     padding: const EdgeInsets.symmetric(
@@ -143,7 +170,8 @@ class LoginScreen extends StatelessWidget {
                               builder: (context) => RegistrationScreen()));
                     },
                     style: TextButton.styleFrom(
-                      foregroundColor: Colors.black, // Set the text color to white
+                      foregroundColor:
+                          Colors.black, // Set the text color to white
                     ),
                     child: const Text('Create an account')),
               ],

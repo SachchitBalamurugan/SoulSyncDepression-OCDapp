@@ -295,6 +295,7 @@ class _EventManagerState extends State<EventManager> {
                               itemCount: data.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return EventCard(
+                                  isHovered: false,
                                   evTitle: "${data[index]['title']}",
                                   imgUrl: "${data[index]['image']}",
                                   evDate: "${data[index]['date']}",

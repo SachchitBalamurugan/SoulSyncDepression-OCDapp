@@ -16,9 +16,14 @@ IconData partyHatIcon =
 IconData groupIcon =
     Icons.group; // Replace with the appropriate group of people icon
 
-class BookingManager extends StatelessWidget {
-// Replace with your ffem value
+class BookingManager extends StatefulWidget {
+  @override
+  State<BookingManager> createState() => _BookingManagerState();
+}
 
+class _BookingManagerState extends State<BookingManager> {
+  bool isHovered = false;
+// Replace with your ffem value
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,12 +65,14 @@ class BookingManager extends StatelessWidget {
                 ),
                 EventCategory(txt: 'Booked'),
                 EventCard(
+                  isHovered: false,
                   evTitle: 'Fundraiser in Ohio Dr',
                   imgUrl:
                       'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
                   evDate: '2024-01-13',
                 ),
                 EventCard(
+                  isHovered: false,
                   evTitle: 'Fundraiser in WDC',
                   imgUrl:
                       'https://th.bing.com/th/id/OIG.6lEn_xIMmKLRHNJDOvCy?pid=ImgGn',
@@ -94,13 +101,31 @@ class BookingManager extends StatelessWidget {
                               shrinkWrap: true,
                               itemCount: data.length,
                               itemBuilder: (BuildContext context, int index) {
-                                return EventCard(
-                                  evTitle: "${data[index]['title']}",
-                                  imgUrl: "${data[index]['image']}",
-                                  evDate: "${data[index]['date']}",
-                                  // date: data[index]['date'],
-                                  // ),
+                                return MouseRegion(
+                                  onHover: (event) {
+                                    setState(() {
+                                      isHovered = true;
+                                    });
+                                    // Handle hover state changes (as discussed previously)
+                                  },
+                                  onExit: (event) {
+                                    setState(() => isHovered = false);
+                                  },
+                                  child: EventCard(
+                                    isHovered: isHovered,
+                                    evTitle: "${data[index]['title']}",
+                                    imgUrl: "${data[index]['image']}",
+                                    evDate: "${data[index]['date']}",
+                                    // date: data[index]['date'],
+                                  ),
                                 );
+                                // return EventCard(
+                                //   evTitle: "${data[index]['title']}",
+                                //   imgUrl: "${data[index]['image']}",
+                                //   evDate: "${data[index]['date']}",
+                                //   // date: data[index]['date'],
+                                //   // ),
+                                // );
                               }),
                         ],
                       );
