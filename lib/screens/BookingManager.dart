@@ -1,4 +1,4 @@
-import 'package:SoulSync/screens/test_event_details_screen.dart';
+import 'package:SoulSync/screens/event_details_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -93,6 +93,7 @@ class _BookingManagerState extends State<BookingManager> {
                               shrinkWrap: true,
                               itemCount: data.length,
                               itemBuilder: (BuildContext context, int index) {
+                                print("your Booked events ${data[index]}");
                                 // NEW FUNCTIONS
                                 void viewEventDetails(int index) {
                                   // Access event details from data[index] and navigate to a details screen
@@ -107,7 +108,7 @@ class _BookingManagerState extends State<BookingManager> {
 
                                 void deleteEvent(int index) async {
                                   try {
-                                    await FirestoreServices.deleteDocument(
+                                    await FirestoreServices.deleteBookedEvent(
                                         data[index].id);
                                     setState(() =>
                                         data.removeAt(index)); // Update UI
@@ -125,8 +126,8 @@ class _BookingManagerState extends State<BookingManager> {
                                     );
                                   }
                                 }
-                                // NEW FUNCTIONS
 
+                                // NEW  NEW FUNCTIONS
                                 return MouseRegion(
                                   onHover: (event) {
                                     setState(() {
@@ -182,6 +183,7 @@ class _BookingManagerState extends State<BookingManager> {
                               shrinkWrap: true,
                               itemCount: data.length,
                               itemBuilder: (BuildContext context, int index) {
+                                print("your events ${data[index]}");
                                 // NEW FUNCTIONS
                                 void viewEventDetails(int index) {
                                   // Access event details from data[index] and navigate to a details screen
@@ -196,7 +198,7 @@ class _BookingManagerState extends State<BookingManager> {
 
                                 void deleteEvent(int index) async {
                                   try {
-                                    await FirestoreServices.deleteDocument(
+                                    await FirestoreServices.deleteEvent(
                                         data[index].id);
                                     setState(() =>
                                         data.removeAt(index)); // Update UI

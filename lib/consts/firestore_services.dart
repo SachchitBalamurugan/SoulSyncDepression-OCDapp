@@ -28,12 +28,17 @@ class FirestoreServices {
   static getUserBookedEvents(uid) {
     return firestore
         .collection(bookedEventsCollection)
-        .where('added_by', isEqualTo: uid)
+        .where('booked_by', isEqualTo: uid)
         .snapshots();
   }
 
   // delete document
-  static deleteDocument(docId) {
+  static deleteEvent(docId) {
+    return firestore.collection(eventsCollection).doc(docId).delete();
+  }
+
+  // delete booked Event
+  static deleteBookedEvent(docId) {
     return firestore.collection(eventsCollection).doc(docId).delete();
   }
 }

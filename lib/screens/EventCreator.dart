@@ -69,12 +69,13 @@ class _EventCreatorState extends State<EventCreator> {
         'image': imageUrl,
         'title': titleText, // Variable to store the title text
         'eventInfo': eventInfoText, // Variable to store the event info text
-        'sponsors/specialGuests': sponsors,
+        'specialGuests': sponsors,
         'date': "${selectedDate!.toLocal()}".split(' ')[0],
         'added_by': currentUser!.uid,
       }).whenComplete(() {
         setState(() {
           _image = null;
+          selectedDate = null;
           _formkey.currentState!.reset();
         });
       });
@@ -266,12 +267,6 @@ class _EventCreatorState extends State<EventCreator> {
                       ],
                     ),
                   ),
-                  // child: _image != null
-                  //     ? Image.memory(
-                  //         _image,
-                  //         fit: BoxFit.cover,
-                  //       )
-                  //     : null),
 
                   // Event Info
                   Padding(
