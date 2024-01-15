@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class EventCard extends StatelessWidget {
@@ -45,7 +47,9 @@ class EventCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '$evTitle',
+                    insertNewlineAtWordBoundary(evTitle, 20),
+                    // Apply a maximumLines and overflow property to handle the second line
+
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 20 * ffem,
@@ -140,5 +144,23 @@ class EventCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String insertNewlineAtWordBoundary(String text, int maxLength) {
+    if (text.length <= maxLength)
+      return text; // No need to split if short enough
+
+    final lastIndexFirstLine = text.lastIndexOf(' ', maxLength);
+    final firstLine = text.substring(0, lastIndexFirstLine + 1);
+    final remainingText = text.substring(lastIndexFirstLine + 1);
+    if (remainingText.length <= maxLength) {
+      // Second line fits within max length, no need to truncate
+      return firstLine + '\n' + remainingText;
+    }
+    final lastIndexSecondLine = remainingText.lastIndexOf(' ', maxLength);
+    return firstLine +
+        '\n' +
+        remainingText.substring(0, lastIndexSecondLine + 1) +
+        '...';
   }
 }

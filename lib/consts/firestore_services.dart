@@ -39,6 +39,6 @@ class FirestoreServices {
 
   // delete booked Event
   static deleteBookedEvent(docId) {
-    return firestore.collection(eventsCollection).doc(docId).delete();
+    return firestore.collection(bookedEventsCollection).doc(docId).delete();
   }
 }

@@ -62,26 +62,50 @@ class _EventCreatorState extends State<EventCreator> {
   }
 
   uploadEvent() async {
-    if (_formkey.currentState!.validate()) {
-      String imageUrl = await _uploadEventBannerToStorage(_image!);
+    // --------------------------------
+    try {
+      if (_formkey.currentState!.validate()) {
+        String imageUrl = await _uploadEventBannerToStorage(_image!);
 
-      await _firestore.collection('events').doc(fileName).set({
-        'image': imageUrl,
-        'title': titleText, // Variable to store the title text
-        'eventInfo': eventInfoText, // Variable to store the event info text
-        'specialGuests': sponsors,
-        'date': "${selectedDate!.toLocal()}".split(' ')[0],
-        'added_by': currentUser!.uid,
-      }).whenComplete(() {
-        setState(() {
-          _image = null;
-          selectedDate = null;
-          _formkey.currentState!.reset();
+        await _firestore.collection('events').doc(fileName).set({
+          'image': imageUrl,
+          'title': titleText, // Variable to store the title text
+          'eventInfo': eventInfoText, // Variable to store the event info text
+          'specialGuests': sponsors,
+          'date': "${selectedDate!.toLocal()}".split(' ')[0],
+          'added_by': currentUser!.uid,
+        }).whenComplete(() {
+          setState(() {
+            _image = null;
+            selectedDate = null;
+            _formkey.currentState!.reset();
+          });
         });
-      });
-    } else {
-      print('O bad guy');
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Event created!'),
+            content:
+                Text('Congratulation!\n Manage your events in Event Info Test'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'OK'),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        print('O bad guy');
+      }
+    } catch (error) {
+      // Handle any errors that occur during deletion
+      print(error);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to create event')),
+      );
     }
+    //--------------------------------------------
   }
 
 // Future<void>

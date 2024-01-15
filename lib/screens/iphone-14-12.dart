@@ -93,6 +93,29 @@ class _EventManagerState extends State<EventManager> {
                   ),
                 ),
                 Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 5, bottom: 20),
+                    width: MediaQuery.of(context).size.width,
+                    height: 55,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Search events...",
+                        hintStyle: TextStyle(
+                          color: Colors.black.withOpacity(0.5),
+                        ),
+                        prefixIcon: const Icon(Icons.search, size: 25),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: ElevatedButton(
                       child: Padding(
