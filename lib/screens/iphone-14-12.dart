@@ -25,6 +25,8 @@ class EventManager extends StatefulWidget {
 class _EventManagerState extends State<EventManager> {
   DateTime? selectedDate;
   late String month = 'January';
+  late String daydate = '01';
+  late String day = 'sat';
 
   _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -38,6 +40,8 @@ class _EventManagerState extends State<EventManager> {
       setState(() {
         selectedDate = picked;
         month = DateFormat.MMMM().format(selectedDate!);
+        day = DateFormat.E().format(selectedDate!);
+        daydate = DateFormat.d().format(selectedDate!);
       });
     }
     print(selectedDate);
@@ -166,7 +170,7 @@ class _EventManagerState extends State<EventManager> {
                                     width: 26 * fem,
                                     height: 20 * fem,
                                     child: Text(
-                                      dayName,
+                                      day,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontFamily: 'Poppins',
@@ -187,7 +191,8 @@ class _EventManagerState extends State<EventManager> {
                                     width: 23 * fem,
                                     height: 36 * fem,
                                     child: Text(
-                                      (index + 1).toString(),
+                                      // (index + 1).toString(),
+                                      daydate,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontFamily: 'Poppins',
@@ -245,6 +250,7 @@ class _EventManagerState extends State<EventManager> {
                     ),
                   ),
                 ),
+                // Filter Events
                 EventCategory(txt: 'Filter Events'),
                 SizedBox(height: 8.0),
                 Row(

@@ -55,7 +55,13 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bookedBy = widget.eventData['booked_by'];
+    final data = widget.eventData.data();
+    final bookedBy = data != null && data is Map
+        ? data.containsKey('booked_by')
+            ? data['booked_by']
+            : null
+        : null;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(

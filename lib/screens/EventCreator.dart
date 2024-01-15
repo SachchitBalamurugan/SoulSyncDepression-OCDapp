@@ -339,11 +339,7 @@ class _EventCreatorState extends State<EventCreator> {
                             uploadEvent();
                             // Navigate to another screen or add your button click logic here
                             // TODO: UNCOMMENT FOR OTHER FUNCTIONALITIES
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //       builder: (context) => LocationSelectionScreen()),
-                            // );
+                            //
                           },
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.zero,
