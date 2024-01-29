@@ -50,7 +50,7 @@ class _EventCreatorState extends State<EventCreator> {
 
   _uploadEventBannerToStorage(PlatformFile image) async {
     fileName = _uuid.v4().toString();
-    final path = 'EventImages/$fileName';
+    final path = 'EventImages/${_image?.path?.split('/').lastOrNull}';
     final file = File(_image!.path!);
     Reference ref = _storage.ref().child(path);
     UploadTask uploadTask = ref.putFile(file);
