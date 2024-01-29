@@ -352,6 +352,8 @@ class _EventManagerState extends State<EventManager> {
     );
 
     if (picked != null && picked != _selectedDate) {
+      _searchController.text = '';
+
       setState(() {
         _selectedDate = picked;
         _selectedSundayDate = _selectedDate.subtract(
@@ -362,6 +364,8 @@ class _EventManagerState extends State<EventManager> {
   }
 
   void _onChangeDate(DateTime picked) {
+    _searchController.text = '';
+
     setState(() {
       _selectedDate = picked;
     });
