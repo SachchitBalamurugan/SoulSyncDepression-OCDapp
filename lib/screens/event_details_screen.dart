@@ -20,6 +20,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   final _uuid = Uuid();
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   bookEvent() async {
     fileName = _uuid.v4().toString();
     try {
@@ -56,11 +57,11 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final data = widget.eventData.data();
-    final bookedBy = data != null && data is Map
-        ? data.containsKey('booked_by')
-            ? data['booked_by']
-            : null
-        : null;
+    final map = data as Map<String, dynamic>;
+    final bookedBy = map.containsKey('booked_by') ? data['booked_by'] : null;
+    final location = map.containsKey('location') ? map['location'] : 'Unknown';
+
+    print('Has: ${widget.eventData}');
 
     return Scaffold(
       body: Container(
@@ -128,8 +129,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                 ),
 
                                 Text(
-                                  widget.eventData[
-                                      'date'], // Display the hint text if no date is selected
+                                  widget.eventData['date'],
+                                  // Display the hint text if no date is selected
                                   style: TextStyle(
                                     fontFamily: 'Inter',
                                     fontSize: 17,
@@ -151,10 +152,10 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                   size: 24,
                                 ),
                                 Text(
-                                  'Choose location...',
+                                  location,
                                   style: TextStyle(
-                                    fontFamily:
-                                        'Inter', // You can specify the font family here
+                                    fontFamily: 'Inter',
+                                    // You can specify the font family here
                                     // fontSize: 17 * ffem,
                                     fontWeight: FontWeight.w900,
                                     // height: 1.2125 * ffem / fem,
@@ -175,8 +176,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                               Text(
                                 'Attending (Auto Updates)',
                                 style: TextStyle(
-                                  fontFamily:
-                                      'Inter', // You can specify the font family here
+                                  fontFamily: 'Inter',
+                                  // You can specify the font family here
                                   // fontSize: 17 * ffem,
                                   fontWeight: FontWeight.w900,
                                   // height: 1.2125 * ffem / fem,
@@ -228,8 +229,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     Text(
                       'Sponsors/Special Guests:',
                       style: TextStyle(
-                        fontFamily:
-                            'Inter', // You can specify the font family here
+                        fontFamily: 'Inter',
+                        // You can specify the font family here
                         fontSize: 30,
                         fontWeight: FontWeight.w900,
                         height: 1.2125,
@@ -259,8 +260,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(23),
                           ),
-                          elevation:
-                              0, // Set elevation to 0 as the shadow is provided by the Container
+                          elevation: 0,
+                          // Set elevation to 0 as the shadow is provided by the Container
                           backgroundColor: Color(0xff7c98a1),
                         ),
                         child: Container(

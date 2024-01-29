@@ -308,6 +308,7 @@ class _EventManagerState extends State<EventManager> {
                             itemCount: filteredData.length,
                             itemBuilder: (BuildContext context, int index) {
                               final item = filteredData[index];
+                              final map = item.data() as Map<String, dynamic>;
 
                               return GestureDetector(
                                 onTap: () => viewEventDetails(item),
@@ -321,6 +322,9 @@ class _EventManagerState extends State<EventManager> {
                                   evTitle: "${item['title']}",
                                   imgUrl: "${item['image']}",
                                   evDate: "${item['date']}",
+                                  location: map.containsKey('location')
+                                      ? "${item['location']}"
+                                      : null,
                                   // date: data[index]['date'],
                                 ),
                               );

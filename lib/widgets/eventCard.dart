@@ -12,6 +12,7 @@ class EventCard extends StatelessWidget {
     required this.evTitle,
     required this.evDate,
     required this.imgUrl,
+    this.location,
   });
 
   // new inputs
@@ -25,6 +26,7 @@ class EventCard extends StatelessWidget {
   final String evTitle;
   final String evDate;
   final String imgUrl;
+  final String? location;
   final bool isHovered;
 
   @override
@@ -82,8 +84,9 @@ class EventCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                  // Show Location, if null/empty replace with Default Location
                   Text(
-                    'Greenfields, Sector 101, Forbibad',
+                    location ?? 'Greenfields, Sector 101, Forbibad',
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 11 * ffem,
