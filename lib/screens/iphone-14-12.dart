@@ -130,12 +130,14 @@ class _EventManagerState extends State<EventManager> {
                       _selectDate(context);
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(Color(0xff335660)),
+                      backgroundColor: MaterialStateProperty.all(
+                        const Color(0xff335660),
+                      ),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
-                              15.0), // Adjust the radius as needed
+                            15.0,
+                          ), // Adjust the radius as needed
                         ),
                       ),
                     ),
@@ -185,7 +187,8 @@ class _EventManagerState extends State<EventManager> {
                             decoration: BoxDecoration(
                               color: bgColor,
                               borderRadius: BorderRadius.circular(9 * fem),
-                              border: _selectedDate == currentDate
+                              border: _selectedDate.copyWith(microsecond: 0) ==
+                                      currentDate.copyWith(microsecond: 0)
                                   ? Border.all(
                                       color: Colors.white,
                                       width: 2,
