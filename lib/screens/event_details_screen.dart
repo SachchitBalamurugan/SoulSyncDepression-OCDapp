@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
 
 import '../consts/firebase_constants.dart';
 
@@ -38,8 +43,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           context: context,
           builder: (BuildContext context) => AlertDialog(
             title: const Text('Event Booked!'),
-            content:
-                Text('Event Booked! Manage your events in Event Info Test'),
+            content: const Text(
+              'Event Booked! Manage your events in Event Info Test',
+            ),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.pop(context, 'OK'),
@@ -60,8 +66,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     final map = data as Map<String, dynamic>;
     final bookedBy = map.containsKey('booked_by') ? data['booked_by'] : null;
     final location = map.containsKey('location') ? map['location'] : 'Unknown';
-
-    print('Has: ${widget.eventData}');
 
     return Scaffold(
       body: Container(
@@ -90,25 +94,46 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: NetworkImage(widget.eventData['image']),
-                      fit: BoxFit.cover),
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(20),
-                      bottomRight: Radius.circular(20)),
+                    image: NetworkImage(
+                      widget.eventData['image'],
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
+                  ),
                 ),
+                height: 300,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-                      child: Text(
-                        widget.eventData['title'],
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 30,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 15,
+                        vertical: 20,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              widget.eventData['title'],
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 30,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () => _onShare(map),
+                            icon: const Icon(
+                              Icons.share,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     // date location attending
@@ -122,7 +147,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                               children: [
                                 // Calendar Button
 
-                                Icon(
+                                const Icon(
                                   Icons.event,
                                   color: Colors.white,
                                   size: 24,
@@ -131,7 +156,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                 Text(
                                   widget.eventData['date'],
                                   // Display the hint text if no date is selected
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontFamily: 'Inter',
                                     fontSize: 17,
                                     fontWeight: FontWeight.w900,
@@ -146,14 +171,14 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: Row(
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.location_on,
                                   color: Colors.white,
                                   size: 24,
                                 ),
                                 Text(
                                   location,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontFamily: 'Inter',
                                     // You can specify the font family here
                                     // fontSize: 17 * ffem,
@@ -166,7 +191,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                             ),
                           ),
                           // Attending
-                          Row(
+                          const Row(
                             children: [
                               Icon(
                                 Icons.people,
@@ -191,7 +216,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     ),
                   ],
                 ),
-                height: 300,
               ),
             ),
             // Event Info
@@ -201,11 +225,11 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Event info:',
                       style: TextStyle(
-                        fontFamily:
-                            'Inter', // You can specify the font family here
+                        // You can specify the font family here
+                        fontFamily: 'Inter',
                         fontSize: 30,
                         fontWeight: FontWeight.w900,
                         // height: 1.2125 * ffem / fem,
@@ -214,7 +238,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     ),
                     Text(
                       widget.eventData['eventInfo'],
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ],
                 ),
@@ -226,11 +250,11 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Sponsors/Special Guests:',
                       style: TextStyle(
-                        fontFamily: 'Inter',
                         // You can specify the font family here
+                        fontFamily: 'Inter',
                         fontSize: 30,
                         fontWeight: FontWeight.w900,
                         height: 1.2125,
@@ -239,7 +263,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     ),
                     Text(
                       widget.eventData['specialGuests'],
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ],
                 ),
@@ -250,7 +274,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: bookedBy != null
-                    ? SizedBox()
+                    ? const SizedBox()
                     : ElevatedButton(
                         onPressed: () {
                           bookEvent();
@@ -262,9 +286,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                           ),
                           elevation: 0,
                           // Set elevation to 0 as the shadow is provided by the Container
-                          backgroundColor: Color(0xff7c98a1),
+                          backgroundColor: const Color(0xff7c98a1),
                         ),
-                        child: Container(
+                        child: const SizedBox(
                           width: 362,
                           height: 61,
                           child: Center(
@@ -285,6 +309,22 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _onShare(Map<String, dynamic> map) async {
+    final imageUrl = map['image'];
+
+    final uri = Uri.parse(imageUrl);
+    final response = await http.get(uri);
+    final dir = await getTemporaryDirectory();
+    final file = File('${dir.path}/image.jpg');
+    await file.writeAsBytes(response.bodyBytes);
+
+    Share.shareXFiles(
+      [XFile(file.path)],
+      text:
+          "${map['title']}\n${map['date']}\n${map['location']},\n${map['eventInfo']},\n${map['specialGuests']}",
     );
   }
 }
