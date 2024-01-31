@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:ndialog/ndialog.dart';
 import '../consts/firebase_constants.dart';
 import '../widgets/eventCard.dart';
 import '../widgets/eventCategory.dart';
@@ -36,8 +37,11 @@ class _EventCreatorState extends State<EventCreator> {
   late String titleText; // Variable to store the title text
   late String eventInfoText; // Variable to store the event info text
   late String sponsors;
+  String _location = '';
   DateTime? selectedDate;
   final _uuid = Uuid();
+
+  CustomProgressDialog? _progressDialog;
 
   Future _pickImage() async {
     final result = await FilePicker.platform.pickFiles();
@@ -50,7 +54,7 @@ class _EventCreatorState extends State<EventCreator> {
 
   _uploadEventBannerToStorage(PlatformFile image) async {
     fileName = _uuid.v4().toString();
-    final path = 'EventImages/$fileName';
+    final path = 'EventImages/${_image?.path?.split('/').lastOrNull}';
     final file = File(_image!.path!);
     Reference ref = _storage.ref().child(path);
     UploadTask uploadTask = ref.putFile(file);
@@ -62,6 +66,8 @@ class _EventCreatorState extends State<EventCreator> {
   }
 
   uploadEvent() async {
+    showLoadingDialog();
+
     // --------------------------------
     try {
       if (_formkey.currentState!.validate()) {
@@ -72,6 +78,7 @@ class _EventCreatorState extends State<EventCreator> {
           'title': titleText, // Variable to store the title text
           'eventInfo': eventInfoText, // Variable to store the event info text
           'specialGuests': sponsors,
+          'location': _location,
           'date': "${selectedDate!.toLocal()}".split(' ')[0],
           'added_by': currentUser!.uid,
         }).whenComplete(() {
@@ -81,31 +88,46 @@ class _EventCreatorState extends State<EventCreator> {
             _formkey.currentState!.reset();
           });
         });
-        showDialog(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-            title: const Text('Event created!'),
-            content:
-                Text('Congratulation!\n Manage your events in Event Info Test'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'OK'),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
+
+        _onEventCreated();
       } else {
         print('O bad guy');
       }
     } catch (error) {
-      // Handle any errors that occur during deletion
-      print(error);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to create event')),
-      );
+      _onFailedToCreateEvent(error);
     }
     //--------------------------------------------
+  }
+
+  void _onEventCreated() {
+    hideLoadingDialog();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Event created!'),
+        content: const Text(
+          'Congratulation!\n Manage your events in Event Info Test',
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _onFailedToCreateEvent(dynamic error) {
+    hideLoadingDialog();
+
+    // Handle any errors that occur during deletion
+    print(error);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Failed to create event')),
+    );
   }
 
 // Future<void>
@@ -122,7 +144,14 @@ class _EventCreatorState extends State<EventCreator> {
         selectedDate = picked;
       });
     }
-    print(selectedDate);
+  }
+
+  @override
+  void dispose() {
+    _progressDialog?.dismiss();
+    _progressDialog = null;
+
+    super.dispose();
   }
 
   @override
@@ -217,33 +246,37 @@ class _EventCreatorState extends State<EventCreator> {
                           },
                         ),
                         // Select the date
-                        Row(
-                          children: [
-                            // Calendar Button
-                            IconButton(
-                              icon: Icon(
+                        GestureDetector(
+                          onTap: () {
+                            // Open the date picker when the calendar icon is tapped
+                            _selectDate(context);
+                          },
+                          child: Row(
+                            children: [
+                              // Calendar Button
+                              Icon(
                                 Icons.event,
                                 color: Colors.white,
                                 size: 24 * fem,
                               ),
-                              onPressed: () {
-                                _selectDate(
-                                    context); // Open the date picker when the calendar icon is tapped
-                              },
-                            ),
-                            Text(
-                              selectedDate != null
-                                  ? "${selectedDate!.toLocal()}".split(
-                                      ' ')[0] // Display the selected date
-                                  : 'Select date by clicking the icon...', // Display the hint text if no date is selected
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 17 * ffem,
-                                fontWeight: FontWeight.w900,
-                                color: Color(0xffffffff),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  selectedDate != null
+                                      ? "${selectedDate!.toLocal()}".split(
+                                          ' ')[0] // Display the selected date
+                                      : 'Select date',
+                                  // Display the hint text if no date is selected
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 17 * ffem,
+                                    fontWeight: FontWeight.w900,
+                                    color: Color(0xffffffff),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         // Choose Location
                         Row(
@@ -253,20 +286,30 @@ class _EventCreatorState extends State<EventCreator> {
                               color: Colors.white,
                               size: 24 * fem,
                             ),
-                            Text(
-                              'Choose location...',
-                              style: TextStyle(
-                                fontFamily:
-                                    'Inter', // You can specify the font family here
-                                fontSize: 17 * ffem,
-                                fontWeight: FontWeight.w900,
-                                height: 1.2125 * ffem / fem,
-                                color: Color(0xffffffff),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                onChanged: (value) {
+                                  _location = value;
+                                },
+                                style: const TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xffffffff),
+                                ),
+                                // Allow the text field to take as much vertical space as needed
+                                decoration: const InputDecoration(
+                                  hintText: 'Input the location',
+                                  hintStyle: TextStyle(
+                                    color: Color(0xffffffff),
+                                  ),
+                                ),
                               ),
                             ),
                           ],
                         ),
-
+                        const SizedBox(height: 8),
                         //Attending
                         Row(
                           children: [
@@ -275,11 +318,12 @@ class _EventCreatorState extends State<EventCreator> {
                               color: Colors.white,
                               size: 24 * fem,
                             ),
+                            const SizedBox(width: 12),
                             Text(
                               'Attending (Auto Updates)',
                               style: TextStyle(
-                                fontFamily:
-                                    'Inter', // You can specify the font family here
+                                fontFamily: 'Inter',
+                                // You can specify the font family here
                                 fontSize: 17 * ffem,
                                 fontWeight: FontWeight.w900,
                                 height: 1.2125 * ffem / fem,
@@ -302,8 +346,8 @@ class _EventCreatorState extends State<EventCreator> {
                         Text(
                           'Event info:',
                           style: TextStyle(
-                            fontFamily:
-                                'Inter', // You can specify the font family here
+                            fontFamily: 'Inter',
+                            // You can specify the font family here
                             fontSize: 30 * ffem,
                             fontWeight: FontWeight.w900,
                             height: 1.2125 * ffem / fem,
@@ -319,7 +363,8 @@ class _EventCreatorState extends State<EventCreator> {
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                             color: Color(0xffffffff),
-                          ), // Allow the text field to take as much vertical space as needed
+                          ),
+                          // Allow the text field to take as much vertical space as needed
                           decoration: InputDecoration(
                             hintText: 'Type your text here...',
                             hintStyle: TextStyle(
@@ -331,8 +376,8 @@ class _EventCreatorState extends State<EventCreator> {
                         Text(
                           'Sponsors/Special Guests:',
                           style: TextStyle(
-                            fontFamily:
-                                'Inter', // You can specify the font family here
+                            fontFamily: 'Inter',
+                            // You can specify the font family here
                             fontSize: 30 * ffem,
                             fontWeight: FontWeight.w900,
                             height: 1.2125 * ffem / fem,
@@ -370,8 +415,8 @@ class _EventCreatorState extends State<EventCreator> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(23 * fem),
                             ),
-                            elevation:
-                                0, // Set elevation to 0 as the shadow is provided by the Container
+                            elevation: 0,
+                            // Set elevation to 0 as the shadow is provided by the Container
                             backgroundColor: Color(0xff7c98a1),
                           ),
                           child: Center(
@@ -404,5 +449,21 @@ class _EventCreatorState extends State<EventCreator> {
         ),
       ),
     );
+  }
+
+  void showLoadingDialog({
+    bool isDismissible = true,
+  }) {
+    _progressDialog = CustomProgressDialog(
+      context,
+      dismissable: isDismissible,
+    );
+    _progressDialog?.setLoadingWidget(const CircularProgressIndicator());
+
+    _progressDialog?.show();
+  }
+
+  void hideLoadingDialog() {
+    _progressDialog?.dismiss();
   }
 }

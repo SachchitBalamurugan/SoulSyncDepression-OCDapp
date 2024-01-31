@@ -2,13 +2,11 @@ import 'package:SoulSync/screens/event_details_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../consts/firebase_constants.dart';
+
 import '../consts/firestore_services.dart';
 import '../widgets/eventCard.dart';
 import '../widgets/eventCategory.dart';
 import 'EventCreator.dart';
-import 'EventManager.dart';
-import 'home_screen.dart';
 
 IconData donateIcon =
     Icons.monetization_on; // Replace with the appropriate donation icon
@@ -23,35 +21,43 @@ class EventManager extends StatefulWidget {
 }
 
 class _EventManagerState extends State<EventManager> {
-  DateTime? selectedDate;
-  late String month = 'January';
-  late String daydate = '01';
-  late String day = 'sat';
-
-  _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2101),
-    );
-
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-        month = DateFormat.MMMM().format(selectedDate!);
-        day = DateFormat.E().format(selectedDate!);
-        daydate = DateFormat.d().format(selectedDate!);
-      });
-    }
-    print(selectedDate);
-  }
+  final _dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  final _searchController = TextEditingController();
 
   final double fem = 1.0;
+
   // Replace with your fem value
   final double ffem = 1.0;
+
   // Replace with your ffem value
   bool isHovered = false;
+
+  var _selectedDate = DateTime.now();
+  var _selectedSundayDate = DateTime.now().subtract(
+    Duration(days: DateTime.now().weekday),
+  );
+
+  var _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+
+    _searchController.addListener(_onSearchTextChange);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchTextChange);
+
+    super.dispose();
+  }
+
+  void _onSearchTextChange() {
+    setState(() {
+      _searchQuery = _searchController.text;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +110,7 @@ class _EventManagerState extends State<EventManager> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: TextFormField(
+                      controller: _searchController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: "Search events...",
@@ -118,117 +125,108 @@ class _EventManagerState extends State<EventManager> {
                 Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: ElevatedButton(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: EventCategory(txt: month),
+                    onPressed: () {
+                      // Open the date picker when the calendar icon is tapped
+                      _selectDate(context);
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(
+                        const Color(0xff335660),
                       ),
-                      onPressed: () {
-                        _selectDate(
-                            context); // Open the date picker when the calendar icon is tapped
-                      },
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Color(0xff335660)),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                15.0), // Adjust the radius as needed
-                          ),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            15.0,
+                          ), // Adjust the radius as needed
                         ),
-                      )),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: EventCategory(txt: _getMonth()),
+                    ),
+                  ),
                 ),
                 // Scrolling Days
                 Padding(
                   padding: const EdgeInsets.all(15.0),
-                  child: Container(
-                    width: 362 * fem,
-                    height: 79 * fem,
+                  child: SizedBox(
+                    height: 80 * fem,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: 7,
                       itemBuilder: (context, index) {
                         // Determine the day name based on the index (0 is Sunday, 1 is Monday, etc.)
-                        String dayName = [
-                          'Sun',
-                          'Mon',
-                          'Tue',
-                          'Wed',
-                          'Thu',
-                          'Fri',
-                          'Sat'
-                        ][index];
+                        final dayName = _dayNames[index];
+                        final currentDate = _selectedSundayDate.add(
+                          Duration(days: index),
+                        );
+                        final date = DateFormat.d().format(currentDate);
 
                         // Check if it's Tuesday and change the background color and text color
-                        Color bgColor = dayName == 'Tue'
-                            ? Color(0xff8eb1bb)
-                            : Color(0xff335660);
-                        Color textColor = dayName == 'Tue'
-                            ? Color(0xff335660)
-                            : Color(0xff8eb1bb);
+                        final bgColor = dayName == 'Tue'
+                            ? const Color(0xff8eb1bb)
+                            : const Color(0xff335660);
+                        final textColor = dayName == 'Tue'
+                            ? const Color(0xff335660)
+                            : const Color(0xff8eb1bb);
 
-                        return Container(
-                          margin: EdgeInsets.fromLTRB(
-                              0 * fem, 0 * fem, 9 * fem, 0 * fem),
-                          width: 44 * fem,
-                          height: double.infinity,
-                          decoration: BoxDecoration(
-                            color: bgColor,
-                            borderRadius: BorderRadius.circular(9 * fem),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color(0x3f000000),
-                                offset: Offset(0 * fem, 4 * fem),
-                                blurRadius: 2 * fem,
-                              ),
-                            ],
-                          ),
-                          child: Stack(
-                            children: [
-                              Positioned(
-                                left: 9.5 * fem,
-                                top: 44 * fem,
-                                child: Align(
-                                  child: SizedBox(
-                                    width: 26 * fem,
-                                    height: 20 * fem,
-                                    child: Text(
-                                      day,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontFamily: 'Poppins',
-                                        fontSize: 13 * ffem,
-                                        fontWeight: FontWeight.w700,
-                                        height: 1.5 * ffem / fem,
-                                        color: textColor,
-                                      ),
-                                    ),
+                        return GestureDetector(
+                          onTap: () {
+                            _onChangeDate(currentDate);
+                          },
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(
+                              0 * fem,
+                              0 * fem,
+                              10 * fem,
+                              0 * fem,
+                            ),
+                            width: 44 * fem,
+                            height: double.infinity,
+                            decoration: BoxDecoration(
+                              color: bgColor,
+                              borderRadius: BorderRadius.circular(9 * fem),
+                              border: _selectedDate.copyWith(microsecond: 0) ==
+                                      currentDate.copyWith(microsecond: 0)
+                                  ? Border.all(
+                                      color: Colors.white,
+                                      width: 2,
+                                    )
+                                  : null,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0x3f000000),
+                                  offset: Offset(0 * fem, 4 * fem),
+                                  blurRadius: 2 * fem,
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  date,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 24 * ffem,
+                                    fontWeight: FontWeight.w700,
+                                    color: textColor,
                                   ),
                                 ),
-                              ),
-                              Positioned(
-                                left: 11 * fem,
-                                top: 11 * fem,
-                                child: Align(
-                                  child: SizedBox(
-                                    width: 23 * fem,
-                                    height: 36 * fem,
-                                    child: Text(
-                                      // (index + 1).toString(),
-                                      daydate,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontFamily: 'Poppins',
-                                        fontSize: 24 * ffem,
-                                        fontWeight: FontWeight.w700,
-                                        height: 1.5 * ffem / fem,
-                                        color: textColor,
-                                      ),
-                                    ),
+                                Text(
+                                  dayName.substring(0, 1),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 24 * ffem,
+                                    fontWeight: FontWeight.w700,
+                                    color: textColor,
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         );
                       },
@@ -273,31 +271,6 @@ class _EventManagerState extends State<EventManager> {
                     ),
                   ),
                 ),
-                // Filter Events
-                EventCategory(txt: 'Filter Events'),
-                SizedBox(height: 8.0),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 15.0),
-                      child: FilterEventCats(
-                          fem: fem,
-                          ffem: ffem,
-                          name: "Fundraiser",
-                          icon: donateIcon),
-                    ),
-                    SizedBox(width: 12),
-                    FilterEventCats(
-                        fem: fem, ffem: ffem, name: 'Gala', icon: partyHatIcon),
-                    SizedBox(width: 12),
-                    FilterEventCats(
-                        fem: fem,
-                        ffem: ffem,
-                        name: 'Programs',
-                        icon: groupIcon),
-                  ],
-                ),
                 SizedBox(height: 8.0),
                 // Events on The Day
                 EventCategory(txt: 'Events'),
@@ -305,54 +278,53 @@ class _EventManagerState extends State<EventManager> {
 
                 StreamBuilder(
                   stream: FirestoreServices.getEventsByDate(
-                      "${selectedDate?.toLocal()}".split(' ')[0]),
+                      "${_selectedDate.toLocal()}".split(' ')[0]),
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (!snapshot.hasData) {
-                      return Center(
+                      return const Center(
                         child: CircularProgressIndicator(),
                       );
                     } else if (snapshot.data!.docs.isEmpty) {
-                      return Center(
+                      return const Center(
                         child: Text("No Event Available"),
                       );
                     } else {
-                      var data = snapshot.data!.docs;
+                      final data = snapshot.data!.docs;
+                      final filteredData = data.where(
+                        (element) {
+                          return element['title']
+                              .toString()
+                              .contains(_searchQuery);
+                        },
+                      ).toList();
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           // New
                           ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
+                            physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
-                            itemCount: data.length,
+                            itemCount: filteredData.length,
                             itemBuilder: (BuildContext context, int index) {
-                              // NEW FUNCTIONS
-                              void viewEventDetails(int index) {
-                                // Access event details from data[index] and navigate to a details screen
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EventDetailsScreen(
-                                        eventData: data[index]),
-                                  ),
-                                );
-                              }
-
-                              // NEW FUNCTIONS
+                              final item = filteredData[index];
+                              final map = item.data() as Map<String, dynamic>;
 
                               return GestureDetector(
-                                onTap: () => viewEventDetails(index),
+                                onTap: () => viewEventDetails(item),
                                 child: EventCard(
                                   isHovered: false,
                                   // new inputs
-                                  id: data[index].id,
+                                  id: item.id,
                                   onDeletePressed: () {},
                                   onViewPressed: () {},
                                   //
-                                  evTitle: "${data[index]['title']}",
-                                  imgUrl: "${data[index]['image']}",
-                                  evDate: "${data[index]['date']}",
+                                  evTitle: "${item['title']}",
+                                  imgUrl: "${item['image']}",
+                                  evDate: "${item['date']}",
+                                  location: map.containsKey('location')
+                                      ? "${item['location']}"
+                                      : null,
                                   // date: data[index]['date'],
                                 ),
                               );
@@ -367,6 +339,48 @@ class _EventManagerState extends State<EventManager> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  String _getMonth() {
+    return DateFormat.MMMM().format(_selectedDate);
+  }
+
+  void _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null && picked != _selectedDate) {
+      _searchController.text = '';
+
+      setState(() {
+        _selectedDate = picked;
+        _selectedSundayDate = _selectedDate.subtract(
+          Duration(days: _selectedDate.weekday),
+        );
+      });
+    }
+  }
+
+  void _onChangeDate(DateTime picked) {
+    _searchController.text = '';
+
+    setState(() {
+      _selectedDate = picked;
+    });
+  }
+
+  void viewEventDetails(QueryDocumentSnapshot data) {
+    // Access event details from data[index] and navigate to a details screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventDetailsScreen(eventData: data),
       ),
     );
   }
