@@ -295,7 +295,8 @@ class _EventManagerState extends State<EventManager> {
                         (element) {
                           return element['title']
                               .toString()
-                              .contains(_searchQuery);
+                              .toLowerCase()
+                              .contains(_searchQuery.toLowerCase());
                         },
                       ).toList();
                       return Column(
